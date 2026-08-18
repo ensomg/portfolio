@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Wordmark } from "@/components/wordmark";
 
@@ -20,6 +20,15 @@ export function Opening({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [settled, setSettled] = useState(false);
   const reduceMotion = useReducedMotion();
+
+  // A reload restores the previous scroll position, which would leave the page
+  // sitting halfway down while the overlay hides it — the site would open on
+  // the middle of a section instead of the first screen. An entrance only makes
+  // sense from the top, so take scrolling back from the browser.
+  useLayoutEffect(() => {
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
