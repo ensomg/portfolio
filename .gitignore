@@ -42,3 +42,7 @@ next-env.d.ts
 
 # local source assets, not part of the site
 /indir*.png
+
+# agent tooling, not part of the site
+/.claude
+/CLAUDE.md
