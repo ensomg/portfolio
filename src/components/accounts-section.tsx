@@ -189,10 +189,14 @@ function SteamPanel() {
           <Skeleton className="h-3.5 w-32" />
           <Skeleton className="h-3 w-24" />
         </div>
-      ) : account.connected ? (
+      ) : (
         <div className="space-y-3.5">
           <div className="flex gap-6">
-            <Stat value={`${account.totalHours}h`} label="on record" />
+            {/* Only shown when it was actually read — a total that contradicts
+                the list underneath it is worse than no total. */}
+            {account.totalHours !== null ? (
+              <Stat value={`${account.totalHours}h`} label="on record" />
+            ) : null}
             <Stat value={String(account.gameCount ?? 0)} label="games owned" />
           </div>
 
@@ -217,13 +221,13 @@ function SteamPanel() {
               </li>
             ))}
           </ul>
+
+          {account.source === "recorded" ? (
+            <p className="text-[0.6875rem] tracking-[0.01em] text-soft">
+              Snapshot — live figures need <span className="font-mono">STEAM_API_KEY</span>.
+            </p>
+          ) : null}
         </div>
-      ) : (
-        <p className="text-[0.8125rem] leading-[1.55] text-soft">
-          Playtime is only readable through Steam&apos;s Web API, which needs a key. Set{" "}
-          <span className="font-mono text-[0.75rem]">STEAM_API_KEY</span> and this fills in on its
-          own.
-        </p>
       )}
     </Panel>
   );

@@ -15,26 +15,38 @@ export type SteamGame = {
 export type SteamAccount = {
   vanity: string;
   profile: string;
-  /**
-   * False when no STEAM_API_KEY is set, or when Steam will not answer for this
-   * account. Playtime is only readable through the Web API — there is no
-   * public endpoint for it — and the profile has to be public.
-   */
   connected: boolean;
+  /**
+   * `live` came from Steam just now. `recorded` is the snapshot below, used
+   * when no STEAM_API_KEY is set or Steam will not answer — playtime is only
+   * readable through the Web API, and the profile has to be public. The card
+   * says which one it is rather than passing a snapshot off as live.
+   */
+  source: "live" | "recorded";
   steamId: string | null;
   totalHours: number | null;
   gameCount: number | null;
   top: SteamGame[];
 };
 
-const disconnected: SteamAccount = {
+/**
+ * Read off the profile by hand. Kept deliberately small: only figures that were
+ * actually on the page, so the card is never showing a number nobody checked.
+ */
+const recorded: SteamAccount = {
   vanity: VANITY,
   profile: `https://steamcommunity.com/id/${VANITY}`,
-  connected: false,
+  connected: true,
+  source: "recorded",
   steamId: null,
   totalHours: null,
-  gameCount: null,
-  top: [],
+  gameCount: 200,
+  top: [
+    { appid: 227300, name: "Euro Truck Simulator 2", hours: 2880.4, icon: null },
+    { appid: 1293830, name: "Forza Horizon 4", hours: 2382, icon: null },
+    { appid: 394690, name: "Tower Unite", hours: 2371.3, icon: null },
+    { appid: 1551360, name: "Forza Horizon 5", hours: 2240.5, icon: null },
+  ],
 };
 
 type OwnedGame = {
@@ -46,32 +58,34 @@ type OwnedGame = {
 
 export async function GET() {
   const key = process.env.STEAM_API_KEY;
-  if (!key) return NextResponse.json(disconnected);
+  if (!key) return NextResponse.json(recorded);
 
   try {
     const resolved = await fetch(
       `https://api.steampowered.com/ISteamUser/ResolveVanityURL/v1/?key=${key}&vanityurl=${VANITY}`,
       { next: { revalidate } },
     );
-    if (!resolved.ok) return NextResponse.json(disconnected);
+    if (!resolved.ok) return NextResponse.json(recorded);
 
     const { response } = (await resolved.json()) as {
       response?: { success?: number; steamid?: string };
     };
     const steamId = response?.success === 1 ? response.steamid : undefined;
-    if (!steamId) return NextResponse.json(disconnected);
+    if (!steamId) return NextResponse.json(recorded);
 
     const owned = await fetch(
       `https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=${key}` +
         `&steamid=${steamId}&include_appinfo=1&include_played_free_games=1`,
       { next: { revalidate } },
     );
-    if (!owned.ok) return NextResponse.json({ ...disconnected, steamId });
+    if (!owned.ok) return NextResponse.json({ ...recorded, steamId });
 
     const payload = (await owned.json()) as {
       response?: { game_count?: number; games?: OwnedGame[] };
     };
     const games = payload.response?.games ?? [];
+    // An empty library means the profile is private, not that he owns nothing.
+    if (games.length === 0) return NextResponse.json({ ...recorded, steamId });
 
     const minutes = games.reduce((total, game) => total + (game.playtime_forever ?? 0), 0);
     const top = games
@@ -91,12 +105,13 @@ export async function GET() {
       vanity: VANITY,
       profile: `https://steamcommunity.com/id/${VANITY}`,
       connected: true,
+      source: "live",
       steamId,
       totalHours: Math.round(minutes / 60),
       gameCount: payload.response?.game_count ?? games.length,
       top,
     } satisfies SteamAccount);
   } catch {
-    return NextResponse.json(disconnected);
+    return NextResponse.json(recorded);
   }
 }
