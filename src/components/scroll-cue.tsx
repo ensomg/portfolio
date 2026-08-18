@@ -1,16 +1,16 @@
 "use client";
 
 import { motion, useReducedMotion, useTransform } from "motion/react";
-import { useScrollProgress } from "@/lib/use-scroll-progress";
+import { useViewportProgress } from "@/lib/use-scroll-progress";
 
 /**
  * The nudge that says there is more below. It fades out as soon as the page
  * starts moving — once you know, it has nothing left to tell you.
  */
 export function ScrollCue() {
-  const progress = useScrollProgress();
+  const progress = useViewportProgress();
   const reduceMotion = useReducedMotion();
-  const opacity = useTransform(progress, [0, 0.03], [1, 0], { clamp: true });
+  const opacity = useTransform(progress, [0, 0.1], [1, 0], { clamp: true });
 
   return (
     <motion.div

@@ -1,47 +1,34 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion, useTransform } from "motion/react";
-import { useScrollProgress } from "@/lib/use-scroll-progress";
+import { useTheme } from "next-themes";
+import { AnimatePresence, motion, useReducedMotion, useTransform } from "motion/react";
+import { useSmoothViewportProgress } from "@/lib/use-scroll-progress";
+import { getTheme } from "@/lib/themes";
+
+const SHARED_VIDEO = "/bg.mp4";
 
 /**
- * Full-bleed footage that gives way to black.
- *
- * The first screen is the clip, softly blurred, with the panels floating on it.
- * Scrolling takes the light out of the room: the footage dims to nothing and
- * the page settles onto flat black, so the sections below are read on a plain
- * ground instead of competing with moving video.
- *
- * Drop a clip at `public/bg.mp4` and it plays here. If it is missing, fails to
- * decode, or the visitor asked for reduced motion, the gradient field stands in
- * and the same fade applies to it.
+ * One clip. It reports upward when it cannot play so the theme can fall back
+ * instead of leaving a black rectangle where the background should be.
  */
-export function Background() {
+function Clip({ src, onFail }: { src: string; onFail: (src: string) => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [playable, setPlayable] = useState(false);
-  const reduceMotion = useReducedMotion();
-
-  const progress = useScrollProgress();
-  // Everything the clip contributes is gone by the time the second screen is
-  // centred; the black is fully down shortly after.
-  const lit = useTransform(progress, [0, 0.3], [1, 0], { clamp: true });
-  const dark = useTransform(progress, [0, 0.35], [0, 1], { clamp: true });
+  const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || reduceMotion) return;
+    if (!video) return;
 
-    // Autoplay can be refused after the element is mounted, and browsers pause
-    // background video when the tab is hidden without ever resuming it. Treat
-    // the clip as the background only while it is genuinely running, and ask
-    // again whenever it stops.
+    // Autoplay can be refused after mount, and browsers pause background video
+    // when the tab is hidden without ever resuming it. Ask again whenever it
+    // stops, and only treat the clip as the background while it is running.
     const start = () => {
       video.play().then(
-        () => setPlayable(true),
-        () => setPlayable(false),
+        () => setPlaying(true),
+        () => setPlaying(false),
       );
     };
-
     const onVisible = () => {
       if (document.visibilityState === "visible") start();
     };
@@ -54,7 +41,59 @@ export function Background() {
       video.removeEventListener("pause", start);
       document.removeEventListener("visibilitychange", onVisible);
     };
-  }, [reduceMotion]);
+  }, [src]);
+
+  return (
+    <motion.video
+      ref={videoRef}
+      src={src}
+      autoPlay
+      loop
+      muted
+      playsInline
+      preload="auto"
+      onError={() => onFail(src)}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: playing ? 1 : 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, ease: "easeInOut" }}
+      // The slight scale hides the soft edges the blur would otherwise pull in
+      // from outside the frame.
+      className="absolute inset-0 size-full scale-105 object-cover opacity-60 blur-[5px]"
+    />
+  );
+}
+
+/**
+ * Full-bleed footage that gives way to black.
+ *
+ * The first screen is the theme's clip, softly blurred, with the panels
+ * floating on it. Scrolling takes the light out of the room: the footage dims
+ * to nothing and the page settles onto flat black, so the sections below are
+ * read on a plain ground rather than competing with moving video.
+ *
+ * Each theme names its own clip under `public/`. A missing file falls back to
+ * the shared one, and a missing shared one leaves the gradient field — the
+ * page never depends on a video arriving.
+ */
+export function Background() {
+  const { theme } = useTheme();
+  const reduceMotion = useReducedMotion();
+  // A clip is only given up on after it has failed twice. A single error can
+  // come from a request cancelled mid-switch, and blacklisting a good file for
+  // the rest of the session because of one of those is worse than retrying.
+  const [failures, setFailures] = useState<Record<string, number>>({});
+  const dead = (file: string) => (failures[file] ?? 0) >= 2;
+
+  const wanted = getTheme(theme).video;
+  const src = dead(wanted) ? SHARED_VIDEO : wanted;
+  const showClip = !reduceMotion && !dead(SHARED_VIDEO);
+
+  const progress = useSmoothViewportProgress();
+  // The footage is spent by the time the first screen has been scrolled away,
+  // and the black is fully down as the second screen arrives.
+  const lit = useTransform(progress, [0, 0.8], [1, 0], { clamp: true });
+  const dark = useTransform(progress, [0, 0.95], [0, 1], { clamp: true });
 
   return (
     <div aria-hidden className="fixed inset-0 -z-10 overflow-hidden bg-background">
@@ -65,28 +104,17 @@ export function Background() {
         <span className="field field-b" />
         <span className="field field-c" />
 
-        {!reduceMotion ? (
-          // The reveal is kept on its own element: a CSS transition on the same
-          // property the scroll drives would lag a second behind every wheel event.
-          <div
-            className="absolute inset-0 transition-opacity duration-1000"
-            style={{ opacity: playable ? 1 : 0 }}
-          >
-            <video
-              ref={videoRef}
-              src="/bg.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              onError={() => setPlayable(false)}
-              // The slight scale hides the soft edges the blur would otherwise
-              // pull in from outside the frame.
-              className="absolute inset-0 size-full scale-105 object-cover opacity-60 blur-[5px]"
+        <AnimatePresence>
+          {showClip ? (
+            <Clip
+              key={src}
+              src={src}
+              onFail={(bad) =>
+                setFailures((current) => ({ ...current, [bad]: (current[bad] ?? 0) + 1 }))
+              }
             />
-          </div>
-        ) : null}
+          ) : null}
+        </AnimatePresence>
 
         {/* Keeps panel text legible over whatever is playing. */}
         <div className="absolute inset-0 bg-[var(--veil)]" />

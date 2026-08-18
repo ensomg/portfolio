@@ -1,22 +1,21 @@
 "use client";
 
-import { useTheme } from "next-themes";
 import { motion, useReducedMotion } from "motion/react";
-import { Moon, Sun } from "lucide-react";
 import { crossFade, springMove } from "@/lib/spring";
 import { GitHubIcon } from "@/components/icons";
+import { ThemePicker } from "@/components/theme-picker";
+import { Soundtrack } from "@/components/soundtrack";
 import { site } from "@/lib/site";
 
-const chrome =
-  "flex size-9 items-center justify-center rounded-full text-muted-foreground " +
+const control =
+  "flex size-9 cursor-pointer items-center justify-center rounded-full text-muted-foreground " +
   "transition-colors duration-200 hover:text-foreground focus-visible:outline-none " +
-  "focus-visible:ring-2 focus-visible:ring-[var(--accent-link)]/50";
+  "focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50";
 
 /**
  * Floating chrome, not a fixed strip: content scrolls underneath the glass.
  */
 export function FloatingChrome() {
-  const { resolvedTheme, setTheme } = useTheme();
   const reduceMotion = useReducedMotion();
 
   return (
@@ -32,24 +31,14 @@ export function FloatingChrome() {
           target="_blank"
           rel="noreferrer"
           title="GitHub profile"
-          className={chrome}
+          className={control}
         >
           <span className="sr-only">GitHub profile</span>
           <GitHubIcon className="size-[17px]" />
         </a>
 
-        <button
-          type="button"
-          title="Toggle theme"
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          className={`${chrome} active:scale-95`}
-        >
-          <span className="sr-only">Toggle theme</span>
-          {/* Which icon shows is a styling question, so CSS answers it. Nothing
-              here depends on client-only state, so the first paint is correct. */}
-          <Sun className="size-[17px] dark:hidden" strokeWidth={1.6} />
-          <Moon className="hidden size-[17px] dark:block" strokeWidth={1.6} />
-        </button>
+        <Soundtrack className={control} />
+        <ThemePicker triggerClassName={control} />
       </motion.div>
     </div>
   );

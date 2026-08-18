@@ -24,10 +24,8 @@ export const metadata: Metadata = {
 const sans = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f2f2f4" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e0f14" },
-  ],
+  // The default palette; the picker changes the page, not the browser chrome.
+  themeColor: "#0e0f14",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

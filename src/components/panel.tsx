@@ -1,9 +1,15 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion, useTransform } from "motion/react";
+import { useSmoothViewportProgress } from "@/lib/use-scroll-progress";
 import { crossFade } from "@/lib/spring";
 import { cn } from "@/lib/utils";
+
+/** A panel is clear of the screen by the time three quarters of it has gone. */
+const SCATTER_END = 0.75;
+
+export type Drift = { x: number; y: number; r: number };
 
 /**
  * A glass panel. Panels arrive by materializing — blur and scale resolve
@@ -15,6 +21,7 @@ export function Panel({
   action,
   index = 0,
   solid = false,
+  drift,
   className,
   contentClassName,
   children,
@@ -24,12 +31,27 @@ export function Panel({
   index?: number;
   /** Opaque card, for the sections below the fold where the ground is flat. */
   solid?: boolean;
+  /**
+   * Direction this panel leaves in as the first screen is scrolled away.
+   * Each panel carries on outward from roughly where it sits, so the screen
+   * comes apart rather than sliding off as one slab.
+   */
+  drift?: Drift;
   className?: string;
   contentClassName?: string;
   children: React.ReactNode;
 }) {
   const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
+  const progress = useSmoothViewportProgress();
+
+  const range = [0, SCATTER_END];
+  const x = useTransform(progress, range, [0, drift?.x ?? 0], { clamp: true });
+  const y = useTransform(progress, range, [0, drift?.y ?? 0], { clamp: true });
+  const rotate = useTransform(progress, range, [0, drift?.r ?? 0], { clamp: true });
+  const scale = useTransform(progress, range, [1, 0.86], { clamp: true });
+  const opacity = useTransform(progress, [0.05, SCATTER_END * 0.85], [1, 0], { clamp: true });
+  const scatter = drift && !reduceMotion ? { x, y, rotate, scale, opacity } : undefined;
 
   // Light catching the glass, tracked 1:1 with the pointer. Written straight to
   // custom properties so following the cursor never costs a React render.
@@ -41,7 +63,7 @@ export function Panel({
     node.style.setProperty("--my", `${event.clientY - rect.top}px`);
   };
 
-  return (
+  const body = (
     <motion.section
       ref={ref}
       onPointerMove={trackPointer}
@@ -57,10 +79,10 @@ export function Panel({
           : { type: "spring", bounce: 0, duration: 0.6, delay: 0.1 + index * 0.07 }
       }
       className={cn(
-        "group/panel relative flex flex-col overflow-hidden",
+        "group/panel relative flex h-full flex-col overflow-hidden",
         solid ? "panel-solid" : "panel panel-sheen hover:bg-[var(--panel-hover)]",
         "transition-[background-color,border-color] duration-300",
-        className,
+        !drift && className,
       )}
     >
       {label ? (
@@ -73,6 +95,17 @@ export function Panel({
         {children}
       </div>
     </motion.section>
+  );
+
+  // The entrance and the scroll-away live on separate elements. Sharing one
+  // would put two writers on the same transform, and the panel would fight
+  // itself for a frame every time the page moved.
+  if (!scatter) return body;
+
+  return (
+    <motion.div style={scatter} className={cn("will-change-transform", className)}>
+      {body}
+    </motion.div>
   );
 }
 

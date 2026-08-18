@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *, .midnight *));
 
 @theme inline {
   --color-background: var(--background);
@@ -129,57 +129,120 @@
   }
 }
 /* ---------------------------------------------------------------------------
-   Surface
+   Palettes
 
-   The page is a sheet of glass panels floating over moving footage. Every
-   colour below is defined for both themes so the panels stay legible whatever
-   is playing underneath.
+   One block per theme. `:root` carries the default so the page is correct
+   before next-themes has put a class on <html>. Every block defines the same
+   token set — a theme that leaves one out inherits a colour from another
+   palette, which is how themes end up almost right and impossible to debug.
 --------------------------------------------------------------------------- */
 
-:root {
-  --background: oklch(0.965 0.002 285);
-  --foreground: oklch(0.18 0.004 285);
-  --muted-foreground: oklch(0.46 0.008 285);
-  --radius: 1rem;
-
-  /* Glass panel. */
-  --panel: oklch(1 0 0 / 62%);
-  --panel-edge: oklch(1 0 0 / 80%);
-  --panel-hover: oklch(1 0 0 / 74%);
-  --panel-blur: 14px;
-  --panel-shadow: 0 1px 2px oklch(0 0 0 / 5%), 0 16px 40px -24px oklch(0 0 0 / 30%);
-
-  /* Veil between the footage and the panels. */
-  --veil: oklch(0.97 0.002 285 / 62%);
-
-  --accent: oklch(0.58 0.15 255);
-  --rule: oklch(0 0 0 / 8%);
-
-  /* What the page comes to rest on once the footage has faded out, and the
-     opaque card used from there down. */
-  --ground: oklch(0.985 0.001 285);
-  --surface: oklch(1 0 0);
-  --surface-edge: oklch(0.9 0.003 285);
-}
-
+:root,
 .dark {
+  color-scheme: dark;
   --background: oklch(0.155 0.008 265);
   --foreground: oklch(0.97 0.002 285);
   --muted-foreground: oklch(0.68 0.008 285);
+  --radius: 1rem;
 
   --panel: oklch(1 0 0 / 4%);
   --panel-edge: oklch(1 0 0 / 10%);
   --panel-hover: oklch(1 0 0 / 7%);
+  --panel-blur: 14px;
   --panel-shadow: 0 1px 2px oklch(0 0 0 / 30%), 0 20px 50px -30px oklch(0 0 0 / 80%);
 
   --veil: oklch(0.13 0.008 265 / 68%);
-
   --accent: oklch(0.72 0.13 250);
+  --accent-zone: oklch(0.79 0.14 72);
   --rule: oklch(1 0 0 / 9%);
 
   --ground: oklch(0.06 0 0);
   --surface: oklch(0.145 0.004 285);
   --surface-edge: oklch(1 0 0 / 11%);
+}
+
+.midnight {
+  color-scheme: dark;
+  --background: oklch(0.215 0.045 262);
+  --foreground: oklch(0.96 0.012 250);
+  --muted-foreground: oklch(0.69 0.025 250);
+
+  --panel: oklch(0.7 0.1 255 / 6%);
+  --panel-edge: oklch(0.85 0.06 250 / 13%);
+  --panel-hover: oklch(0.7 0.1 255 / 10%);
+  --panel-shadow: 0 1px 2px oklch(0 0 0 / 35%), 0 20px 50px -30px oklch(0.1 0.08 260 / 90%);
+
+  --veil: oklch(0.19 0.05 264 / 64%);
+  --accent: oklch(0.76 0.14 235);
+  --accent-zone: oklch(0.82 0.13 190);
+  --rule: oklch(0.85 0.06 250 / 12%);
+
+  --ground: oklch(0.115 0.045 264);
+  --surface: oklch(0.235 0.05 262);
+  --surface-edge: oklch(0.85 0.06 250 / 14%);
+}
+
+.candy {
+  color-scheme: light;
+  --background: oklch(0.965 0.025 340);
+  --foreground: oklch(0.26 0.07 335);
+  --muted-foreground: oklch(0.53 0.06 335);
+
+  --panel: oklch(1 0 0 / 60%);
+  --panel-edge: oklch(1 0 0 / 85%);
+  --panel-hover: oklch(1 0 0 / 74%);
+  --panel-shadow: 0 1px 2px oklch(0.4 0.1 340 / 6%), 0 18px 44px -26px oklch(0.45 0.15 340 / 30%);
+
+  --veil: oklch(0.965 0.03 340 / 60%);
+  --accent: oklch(0.6 0.21 350);
+  --accent-zone: oklch(0.62 0.19 300);
+  --rule: oklch(0.5 0.1 340 / 12%);
+
+  --ground: oklch(0.955 0.032 338);
+  --surface: oklch(0.995 0.008 340);
+  --surface-edge: oklch(0.86 0.05 338);
+}
+
+.matcha {
+  color-scheme: light;
+  --background: oklch(0.955 0.03 128);
+  --foreground: oklch(0.26 0.045 140);
+  --muted-foreground: oklch(0.5 0.04 140);
+
+  --panel: oklch(1 0 0 / 58%);
+  --panel-edge: oklch(1 0 0 / 82%);
+  --panel-hover: oklch(1 0 0 / 72%);
+  --panel-shadow: 0 1px 2px oklch(0.35 0.06 140 / 7%), 0 18px 44px -26px oklch(0.35 0.08 140 / 28%);
+
+  --veil: oklch(0.955 0.035 126 / 60%);
+  --accent: oklch(0.55 0.14 148);
+  --accent-zone: oklch(0.62 0.13 90);
+  --rule: oklch(0.4 0.06 140 / 13%);
+
+  --ground: oklch(0.945 0.038 126);
+  --surface: oklch(0.99 0.012 122);
+  --surface-edge: oklch(0.85 0.05 130);
+}
+
+.sunset {
+  color-scheme: light;
+  --background: oklch(0.95 0.035 62);
+  --foreground: oklch(0.27 0.05 45);
+  --muted-foreground: oklch(0.52 0.05 48);
+
+  --panel: oklch(1 0 0 / 58%);
+  --panel-edge: oklch(1 0 0 / 84%);
+  --panel-hover: oklch(1 0 0 / 72%);
+  --panel-shadow: 0 1px 2px oklch(0.4 0.08 45 / 7%), 0 18px 44px -26px oklch(0.4 0.12 40 / 30%);
+
+  --veil: oklch(0.95 0.04 58 / 58%);
+  --accent: oklch(0.63 0.18 38);
+  --accent-zone: oklch(0.6 0.16 5);
+  --rule: oklch(0.42 0.08 45 / 13%);
+
+  --ground: oklch(0.94 0.042 58);
+  --surface: oklch(0.99 0.014 62);
+  --surface-edge: oklch(0.86 0.055 56);
 }
 
 @theme inline {
@@ -410,12 +473,10 @@
 
 /* The domains screen warms the accent. Everything else stays put — one thing
    changing reads as arriving somewhere; three things changing reads as a bug. */
-:root[data-zone="domains"] {
-  --accent: oklch(0.66 0.15 62);
-}
-
-.dark[data-zone="domains"] {
-  --accent: oklch(0.79 0.14 72);
+/* The domains screen shifts the accent to each palette's second colour.
+   One thing changing reads as arriving somewhere; three reads as a bug. */
+[data-zone="domains"] {
+  --accent: var(--accent-zone);
 }
 
 @media (prefers-reduced-motion: reduce) {

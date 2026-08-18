@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Panel, PanelLink } from "@/components/panel";
+import { Panel, PanelLink, type Drift } from "@/components/panel";
 import { MapCard, mapHref } from "@/components/cards/map-card";
 import { SpotifyCard } from "@/components/cards/spotify-card";
 import { SocialCard } from "@/components/cards/social-card";
@@ -36,6 +36,22 @@ function Interests() {
   );
 }
 
+/**
+ * Where each panel goes when the first screen is scrolled away. The values
+ * follow the grid: things on the left carry left, the bottom row drops, and
+ * everything picks up a little rotation so the screen comes apart instead of
+ * sliding off in formation.
+ */
+const drifts: Record<string, Drift> = {
+  hero: { x: -260, y: -140, r: -5 },
+  place: { x: 280, y: -170, r: 6 },
+  now: { x: -300, y: 40, r: -4 },
+  discord: { x: 300, y: 30, r: 4 },
+  github: { x: -230, y: 190, r: -6 },
+  x: { x: 20, y: 260, r: 2 },
+  projects: { x: 250, y: 200, r: 6 },
+};
+
 function NowPanel({ index }: { index: number }) {
   const { presence, ready } = useLanyard();
   const spotify = presence?.listening_to_spotify ? presence.spotify : null;
@@ -46,6 +62,7 @@ function NowPanel({ index }: { index: number }) {
       index={index}
       label={spotify ? "Now playing" : "Now"}
       action={spotify ? <PanelLink href={site.lanyard.spotifyHref}>Spotify</PanelLink> : null}
+      drift={drifts.now}
       className="md:col-span-3"
     >
       {!ready ? (
@@ -78,6 +95,7 @@ function DiscordPanel({ index }: { index: number }) {
       index={index}
       label="Discord"
       action={<PanelLink href={site.discord.href}>Profile</PanelLink>}
+      drift={drifts.discord}
       className="md:col-span-3"
     >
       {!ready ? (
@@ -103,7 +121,12 @@ function DiscordPanel({ index }: { index: number }) {
 export function Bento() {
   return (
     <div className="grid grid-cols-1 gap-3 md:grid-cols-6 md:gap-4">
-      <Panel index={0} className="md:col-span-4" contentClassName="flex flex-col justify-center">
+      <Panel
+        index={0}
+        drift={drifts.hero}
+        className="md:col-span-4"
+        contentClassName="flex flex-col justify-center"
+      >
         <h1 className="w-fit">
           <Wordmark className="h-9 sm:h-12" />
         </h1>
@@ -126,6 +149,7 @@ export function Bento() {
         index={1}
         label="Place"
         action={<PanelLink href={mapHref}>Map</PanelLink>}
+        drift={drifts.place}
         className="md:col-span-2"
         contentClassName="flex"
       >
@@ -139,6 +163,7 @@ export function Bento() {
         index={4}
         label="GitHub"
         action={<PanelLink href={site.github.href}>@{site.github.handle}</PanelLink>}
+        drift={drifts.github}
         className="md:col-span-2"
       >
         <SocialCard platform="github" handle={site.github.handle} href={site.github.href} />
@@ -148,12 +173,19 @@ export function Bento() {
         index={5}
         label="X"
         action={<PanelLink href={site.x.href}>@{site.x.handle}</PanelLink>}
+        drift={drifts.x}
         className="md:col-span-2"
       >
         <SocialCard platform="x" handle={site.x.handle} href={site.x.href} />
       </Panel>
 
-      <Panel index={6} label="Projects" className="md:col-span-2" contentClassName="flex items-center">
+      <Panel
+        index={6}
+        label="Projects"
+        drift={drifts.projects}
+        className="md:col-span-2"
+        contentClassName="flex items-center"
+      >
         {/* The whole panel is the target — a small link inside a large card is a
             worse tap target than the card itself. */}
         <Link href="/projects" className="absolute inset-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50 focus-visible:ring-inset rounded-[var(--radius)]">
