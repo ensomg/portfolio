@@ -6,8 +6,8 @@ import { useSmoothStageProgress } from "@/lib/use-scroll-progress";
 import { crossFade } from "@/lib/spring";
 import { cn } from "@/lib/utils";
 
-/** A panel is clear of the screen by the time three quarters of it has gone. */
-const SCATTER_END = 0.8;
+/** A panel is clear of the screen by the end of the stage first stretch. */
+const SCATTER_END = 0.261;
 
 export type Drift = {
   /** Where it goes, in px. `z` toward the viewer is positive. */
@@ -39,7 +39,7 @@ export function Panel({
   contentClassName,
   children,
 }: {
-  label?: string;
+  label?: React.ReactNode;
   action?: React.ReactNode;
   index?: number;
   /** Opaque card, for the sections below the fold where the ground is flat. */

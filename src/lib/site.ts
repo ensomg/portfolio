@@ -24,6 +24,19 @@ export const site = {
     "I run two things. cheapz.xyz sells Roblox Robux for less than everywhere else. luminalabs.com.tr builds websites by hand — clean, simple, modern, with no template underneath them.",
     "Everything else is small tools I build because I wanted them to exist, a GitHub account I keep pushing to, and a pile of domains I keep buying.",
   ],
+  /**
+   * Sites I worked on that are not mine. Fill these in and the screen writes
+   * itself; while it is empty the section says so rather than inventing work.
+   */
+  contributions: [
+    { name: "craftulus.com.tr", href: "https://www.craftulus.com.tr/" },
+    { name: "luminalabs.com.tr", href: "https://www.luminalabs.com.tr/" },
+    { name: "cheapz.xyz", href: "https://www.cheapz.xyz/" },
+    { name: "frig.best", href: "https://www.frig.best/" },
+    { name: "netiva.com.tr", href: "https://www.netiva.com.tr/" },
+    { name: "hunk.com.tr", href: "https://www.hunk.com.tr/" },
+  ] as { name: string; href: string; role?: string; description?: string }[],
+
   /** The two things I run. */
   companies: [
     {

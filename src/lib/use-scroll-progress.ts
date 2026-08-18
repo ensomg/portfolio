@@ -65,7 +65,7 @@ export function useSmoothScrollProgress(): MotionValue<number> {
  * over more than one viewport of scrolling. Measured against a single screen it
  * would all be over within the first flick of the wheel.
  */
-export const STAGE_TRAVEL = 1.55;
+export const STAGE_TRAVEL = 4.6;
 
 export function useStageProgress(): MotionValue<number> {
   const progress = useMotionValue(0);

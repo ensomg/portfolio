@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useMotionValue, useReducedMotion, useTransform } from "motion/react";
+import { useStageLayer } from "@/components/stage";
 import { site } from "@/lib/site";
 
 /** `luminalabs.com.tr` splits at the first dot, which is where the name ends. */
@@ -13,7 +14,18 @@ function splitDomain(domain: string) {
 function Tile({ domain, index }: { domain: string; index: number }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const reduceMotion = useReducedMotion();
+  const layer = useStageLayer();
   const { name, tld } = splitDomain(domain);
+
+  // On a stage the tiles cannot use `whileInView`: the screen is pinned, so
+  // every tile counts as in view from the first frame and they would all have
+  // finished arriving before the screen is ever shown. They ride the screen's
+  // own arrival instead, each one a beat behind the last.
+  const idle = useMotionValue(0);
+  const start = Math.min(0.55, index * 0.028);
+  const t = useTransform(layer?.enter ?? idle, [start, start + 0.45], [0, 1], { clamp: true });
+  const y = useTransform(t, [0, 1], [46, 0]);
+  const scale = useTransform(t, [0, 1], [0.82, 1]);
 
   // Light catching the tile, tracked 1:1 with the pointer and written straight
   // to custom properties so following the cursor costs no React render.
@@ -25,13 +37,17 @@ function Tile({ domain, index }: { domain: string; index: number }) {
     node.style.setProperty("--my", `${event.clientY - rect.top}px`);
   };
 
+  const arrival = layer
+    ? { style: reduceMotion ? { opacity: t } : { opacity: t, y, scale } }
+    : {
+        initial: reduceMotion ? { opacity: 0 } : { opacity: 0, y: 10 },
+        whileInView: reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 },
+        viewport: { once: true, amount: 0.6 },
+        transition: { type: "spring" as const, bounce: 0, duration: 0.5, delay: index * 0.03 },
+      };
+
   return (
-    <motion.li
-      initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
-      whileInView={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.6 }}
-      transition={{ type: "spring", bounce: 0, duration: 0.5, delay: index * 0.03 }}
-    >
+    <motion.li {...arrival}>
       <a
         ref={ref}
         href={`https://${domain}`}

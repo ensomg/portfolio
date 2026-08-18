@@ -79,6 +79,45 @@ export function NodeIcon({ className }: IconProps) {
   );
 }
 
+export function RobloxIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" fill="currentColor" fillRule="evenodd" className={cn(inline, className)}>
+      <path d="M16.18 20.97 3.03 16.18 7.82 3.03 20.97 7.82ZM13.67 15.59l-5.26-1.92 1.92-5.26 5.26 1.92Z" />
+    </svg>
+  );
+}
+
+export function MinecraftIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" fill="currentColor" className={cn(inline, className)}>
+      <path d="M12 2.6 21.4 8 12 13.4 2.6 8Z" />
+      <path d="M2.6 9.6 11.2 14.6v6.8L2.6 16.4Z" opacity="0.72" />
+      <path d="M21.4 9.6 12.8 14.6v6.8l8.6-5Z" opacity="0.45" />
+    </svg>
+  );
+}
+
+export function SteamIcon({ className }: IconProps) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={cn(inline, className)}
+    >
+      <circle cx="12" cy="12" r="9.2" />
+      <circle cx="15.4" cy="9.2" r="3" />
+      <circle cx="7.6" cy="15.4" r="2.4" fill="currentColor" stroke="none" />
+      <path d="m12.9 10.6-4.1 3.1" />
+      <path d="M2.9 13.2 5.6 14.4" />
+    </svg>
+  );
+}
+
 export const techIcons: Record<string, (props: IconProps) => React.JSX.Element> = {
   HTML: HtmlIcon,
   Python: PythonIcon,
