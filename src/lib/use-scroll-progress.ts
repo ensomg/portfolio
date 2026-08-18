@@ -59,6 +59,51 @@ export function useSmoothScrollProgress(): MotionValue<number> {
 }
 
 /**
+ * How far the pinned stage has been scrolled, as 0–1.
+ *
+ * The first screen is held still while it comes apart, so its motion is spread
+ * over more than one viewport of scrolling. Measured against a single screen it
+ * would all be over within the first flick of the wheel.
+ */
+export const STAGE_TRAVEL = 1.55;
+
+export function useStageProgress(): MotionValue<number> {
+  const progress = useMotionValue(0);
+
+  useEffect(() => {
+    let frame = 0;
+
+    const measure = () => {
+      const span = window.innerHeight * STAGE_TRAVEL;
+      progress.set(span > 0 ? Math.min(1, Math.max(0, window.scrollY / span)) : 0);
+    };
+
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(measure);
+    };
+
+    measure();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [progress]);
+
+  return progress;
+}
+
+/** The stage progress, softened the same way. */
+export function useSmoothStageProgress(): MotionValue<number> {
+  const progress = useStageProgress();
+  return useSpring(progress, { stiffness: 220, damping: 40, mass: 0.6, restDelta: 0.0005 });
+}
+
+/**
  * How far the first screen has been scrolled away, as 0–1 of one viewport.
  *
  * Anything tied to leaving the first screen has to be measured against the

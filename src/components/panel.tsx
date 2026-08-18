@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { easeIn, motion, useMotionTemplate, useReducedMotion, useTransform } from "motion/react";
-import { useSmoothViewportProgress } from "@/lib/use-scroll-progress";
+import { useSmoothStageProgress } from "@/lib/use-scroll-progress";
 import { crossFade } from "@/lib/spring";
 import { cn } from "@/lib/utils";
 
@@ -56,7 +56,7 @@ export function Panel({
 }) {
   const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
-  const progress = useSmoothViewportProgress();
+  const progress = useSmoothStageProgress();
 
   // A single eased value drives every channel, so the panel cannot come apart
   // in one axis before another. Easing in matters: a linear throw reads as a
