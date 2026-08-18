@@ -1,15 +1,28 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useReducedMotion, useTransform } from "motion/react";
+import { easeIn, motion, useMotionTemplate, useReducedMotion, useTransform } from "motion/react";
 import { useSmoothViewportProgress } from "@/lib/use-scroll-progress";
 import { crossFade } from "@/lib/spring";
 import { cn } from "@/lib/utils";
 
 /** A panel is clear of the screen by the time three quarters of it has gone. */
-const SCATTER_END = 0.75;
+const SCATTER_END = 0.8;
 
-export type Drift = { x: number; y: number; r: number };
+export type Drift = {
+  /** Where it goes, in px. `z` toward the viewer is positive. */
+  x: number;
+  y: number;
+  z: number;
+  /** Roll, and the two tumble axes, in degrees. */
+  r: number;
+  rx: number;
+  ry: number;
+  /** Scale it ends on — above 1 for pieces thrown at the camera. */
+  s: number;
+  /** Fraction of the screen scrolled before this one lets go. */
+  d: number;
+};
 
 /**
  * A glass panel. Panels arrive by materializing — blur and scale resolve
@@ -45,13 +58,31 @@ export function Panel({
   const ref = useRef<HTMLElement>(null);
   const progress = useSmoothViewportProgress();
 
-  const range = [0, SCATTER_END];
-  const x = useTransform(progress, range, [0, drift?.x ?? 0], { clamp: true });
-  const y = useTransform(progress, range, [0, drift?.y ?? 0], { clamp: true });
-  const rotate = useTransform(progress, range, [0, drift?.r ?? 0], { clamp: true });
-  const scale = useTransform(progress, range, [1, 0.86], { clamp: true });
-  const opacity = useTransform(progress, [0.05, SCATTER_END * 0.85], [1, 0], { clamp: true });
-  const scatter = drift && !reduceMotion ? { x, y, rotate, scale, opacity } : undefined;
+  // A single eased value drives every channel, so the panel cannot come apart
+  // in one axis before another. Easing in matters: a linear throw reads as a
+  // drift, while holding still and then accelerating reads as being flung.
+  const t = useTransform(progress, [drift?.d ?? 0, SCATTER_END], [0, 1], {
+    clamp: true,
+    ease: easeIn,
+  });
+
+  const x = useTransform(t, [0, 1], [0, drift?.x ?? 0]);
+  const y = useTransform(t, [0, 1], [0, drift?.y ?? 0]);
+  const z = useTransform(t, [0, 1], [0, drift?.z ?? 0]);
+  const rotate = useTransform(t, [0, 1], [0, drift?.r ?? 0]);
+  const rotateX = useTransform(t, [0, 1], [0, drift?.rx ?? 0]);
+  const rotateY = useTransform(t, [0, 1], [0, drift?.ry ?? 0]);
+  const scale = useTransform(t, [0, 1], [1, drift?.s ?? 1]);
+  const opacity = useTransform(t, [0, 0.72], [1, 0], { clamp: true });
+  // Fast motion reads better smeared than sharp — the blur is the speed.
+  const blur = useTransform(t, [0, 1], [0, 16]);
+  const filter = useMotionTemplate`blur(${blur}px)`;
+
+  const scatter = !drift
+    ? undefined
+    : reduceMotion
+      ? { opacity }
+      : { x, y, z, rotate, rotateX, rotateY, scale, opacity, filter };
 
   // Light catching the glass, tracked 1:1 with the pointer. Written straight to
   // custom properties so following the cursor never costs a React render.
@@ -103,7 +134,10 @@ export function Panel({
   if (!scatter) return body;
 
   return (
-    <motion.div style={scatter} className={cn("will-change-transform", className)}>
+    <motion.div
+      style={{ ...scatter, transformStyle: "preserve-3d" }}
+      className={cn("will-change-transform", className)}
+    >
       {body}
     </motion.div>
   );

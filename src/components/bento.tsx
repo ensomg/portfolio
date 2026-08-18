@@ -43,13 +43,14 @@ function Interests() {
  * sliding off in formation.
  */
 const drifts: Record<string, Drift> = {
-  hero: { x: -260, y: -140, r: -5 },
-  place: { x: 280, y: -170, r: 6 },
-  now: { x: -300, y: 40, r: -4 },
-  discord: { x: 300, y: 30, r: 4 },
-  github: { x: -230, y: 190, r: -6 },
-  x: { x: 20, y: 260, r: 2 },
-  projects: { x: 250, y: 200, r: 6 },
+  //        outward ------------- tumble ------ end scale, let-go point
+  hero:     { x: -300, y: -190, z: -460, r: -9,  rx:  12, ry: -14, s: 0.7,  d: 0.02 },
+  place:    { x:  350, y: -230, z:  300, r:  12, rx: -14, ry:  18, s: 1.24, d: 0.0 },
+  now:      { x: -390, y:   70, z: -320, r: -7,  rx:   8, ry: -20, s: 0.76, d: 0.09 },
+  discord:  { x:  370, y:   45, z:  340, r:  10, rx: -10, ry:  16, s: 1.2,  d: 0.05 },
+  github:   { x: -290, y:  270, z: -520, r: -14, rx: -16, ry: -10, s: 0.64, d: 0.14 },
+  x:        { x:   30, y:  350, z:  200, r:   4, rx:  20, ry:   2, s: 1.12, d: 0.17 },
+  projects: { x:  310, y:  290, z: -400, r:  13, rx: -18, ry:  12, s: 0.68, d: 0.11 },
 };
 
 function NowPanel({ index }: { index: number }) {
@@ -120,7 +121,12 @@ function DiscordPanel({ index }: { index: number }) {
 
 export function Bento() {
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-6 md:gap-4">
+    <div
+      className="grid grid-cols-1 gap-3 md:grid-cols-6 md:gap-4"
+      // The panels tumble in one shared space rather than each in its own, so
+      // the pieces read as parts of the same screen coming apart.
+      style={{ perspective: 1400, transformStyle: "preserve-3d" }}
+    >
       <Panel
         index={0}
         drift={drifts.hero}
