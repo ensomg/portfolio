@@ -1,0 +1,437 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+/* ---------------------------------------------------------------------------
+   Surface
+
+   The page is a sheet of glass panels floating over moving footage. Every
+   colour below is defined for both themes so the panels stay legible whatever
+   is playing underneath.
+--------------------------------------------------------------------------- */
+
+:root {
+  --background: oklch(0.965 0.002 285);
+  --foreground: oklch(0.18 0.004 285);
+  --muted-foreground: oklch(0.46 0.008 285);
+  --radius: 1rem;
+
+  /* Glass panel. */
+  --panel: oklch(1 0 0 / 62%);
+  --panel-edge: oklch(1 0 0 / 80%);
+  --panel-hover: oklch(1 0 0 / 74%);
+  --panel-blur: 14px;
+  --panel-shadow: 0 1px 2px oklch(0 0 0 / 5%), 0 16px 40px -24px oklch(0 0 0 / 30%);
+
+  /* Veil between the footage and the panels. */
+  --veil: oklch(0.97 0.002 285 / 62%);
+
+  --accent: oklch(0.58 0.15 255);
+  --rule: oklch(0 0 0 / 8%);
+
+  /* What the page comes to rest on once the footage has faded out, and the
+     opaque card used from there down. */
+  --ground: oklch(0.985 0.001 285);
+  --surface: oklch(1 0 0);
+  --surface-edge: oklch(0.9 0.003 285);
+}
+
+.dark {
+  --background: oklch(0.155 0.008 265);
+  --foreground: oklch(0.97 0.002 285);
+  --muted-foreground: oklch(0.68 0.008 285);
+
+  --panel: oklch(1 0 0 / 4%);
+  --panel-edge: oklch(1 0 0 / 10%);
+  --panel-hover: oklch(1 0 0 / 7%);
+  --panel-shadow: 0 1px 2px oklch(0 0 0 / 30%), 0 20px 50px -30px oklch(0 0 0 / 80%);
+
+  --veil: oklch(0.13 0.008 265 / 68%);
+
+  --accent: oklch(0.72 0.13 250);
+  --rule: oklch(1 0 0 / 9%);
+
+  --ground: oklch(0.06 0 0);
+  --surface: oklch(0.145 0.004 285);
+  --surface-edge: oklch(1 0 0 / 11%);
+}
+
+@theme inline {
+  --font-serif: ui-serif, Georgia, "Times New Roman", serif;
+  --color-accent-solid: var(--accent);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans), system-ui, sans-serif;
+    font-size: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    /* Tracking and leading are set per size, never once for the whole page. */
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--accent) 30%, transparent);
+  }
+}
+
+/* Vibrancy: over moving footage, gray body text disappears. Muted copy stays a
+   step brighter and picks up a touch of tracking rather than going pale. */
+@utility text-soft {
+  color: var(--muted-foreground);
+  letter-spacing: 0.01em;
+}
+
+@utility panel {
+  background: var(--panel);
+  backdrop-filter: blur(var(--panel-blur)) saturate(150%);
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius);
+  box-shadow: var(--panel-shadow);
+}
+
+/* From the second screen down the ground is solid, so the cards are too —
+   translucency over flat black buys nothing and costs legibility. */
+@utility panel-solid {
+  background: var(--surface);
+  backdrop-filter: none;
+  border: 1px solid var(--surface-edge);
+  border-radius: var(--radius);
+  box-shadow: none;
+}
+
+@utility accent-serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  letter-spacing: -0.004em;
+}
+
+@utility quiet-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, currentColor 30%, transparent);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color 160ms ease-out, text-decoration-color 160ms ease-out;
+
+  &:hover {
+    color: var(--accent);
+    text-decoration-color: color-mix(in oklab, var(--accent) 70%, transparent);
+  }
+
+  /* Feedback on press, not on release. */
+  &:active {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+}
+
+/* The label above each panel's content — small, so it takes positive tracking. */
+@utility panel-label {
+  font-size: 0.6875rem;
+  line-height: 1;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --panel: oklch(0.99 0.002 285 / 98%);
+    --panel-blur: 0px;
+    --veil: oklch(0.96 0.002 285 / 96%);
+  }
+
+  .dark {
+    --panel: oklch(0.2 0.008 265 / 98%);
+    --veil: oklch(0.13 0.008 265 / 96%);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --panel: oklch(1 0 0);
+    --panel-edge: oklch(0.5 0 0);
+    --panel-blur: 0px;
+    --veil: oklch(0.96 0.002 285 / 99%);
+  }
+
+  .dark {
+    --panel: oklch(0.16 0.008 265);
+    --panel-edge: oklch(0.6 0 0);
+    --veil: oklch(0.12 0.008 265 / 99%);
+  }
+}
+
+/* Stand-in background field — used until a clip is present at /bg.mp4. */
+.field {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  will-change: transform;
+}
+
+.field-a {
+  top: -22rem;
+  left: -14rem;
+  width: 56rem;
+  height: 56rem;
+  background: radial-gradient(circle, oklch(0.6 0.16 258 / 40%), transparent 66%);
+  animation: field-drift-a 38s ease-in-out infinite;
+}
+
+.field-b {
+  right: -18rem;
+  bottom: -24rem;
+  width: 52rem;
+  height: 52rem;
+  background: radial-gradient(circle, oklch(0.64 0.14 320 / 32%), transparent 66%);
+  animation: field-drift-b 46s ease-in-out infinite;
+}
+
+.field-c {
+  top: 30%;
+  left: 40%;
+  width: 40rem;
+  height: 40rem;
+  background: radial-gradient(circle, oklch(0.7 0.12 200 / 22%), transparent 68%);
+  animation: field-drift-c 54s ease-in-out infinite;
+}
+
+@keyframes field-drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(6rem, 4rem, 0) scale(1.12); }
+}
+
+@keyframes field-drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.1); }
+  50% { transform: translate3d(-5rem, -3rem, 0) scale(1); }
+}
+
+@keyframes field-drift-c {
+  0%, 100% { transform: translate3d(-50%, -50%, 0) scale(1); }
+  50% { transform: translate3d(-42%, -58%, 0) scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field {
+    animation: none;
+  }
+}
+
+/* Light catching the edge of the glass, following the pointer. */
+.panel-sheen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+  background: radial-gradient(
+    16rem circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in oklab, var(--foreground) 7%, transparent),
+    transparent 70%
+  );
+}
+
+.panel-sheen:hover::before {
+  opacity: 1;
+}
+
+@media (pointer: coarse), (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .panel-sheen::before {
+    display: none;
+  }
+}
+
+/* The wordmark is painted, not drawn: the PNG supplies the shape as a mask and
+   the current text colour fills it, so it inverts with the theme from one asset. */
+.wordmark {
+  display: block;
+  width: auto;
+  aspect-ratio: 346 / 85;
+  background-color: currentColor;
+  mask-image: url("/logo.png");
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: left center;
+}
+
+/* ---------------------------------------------------------------------------
+   Zones
+
+   A section can repaint the whole site while it holds the screen. Registering
+   the colour tokens lets them interpolate, so arriving somewhere new is a
+   change of light rather than a switch being flipped.
+--------------------------------------------------------------------------- */
+
+@property --accent {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: oklch(0.58 0.15 255);
+}
+
+:root {
+  transition: --accent 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The domains screen warms the accent. Everything else stays put — one thing
+   changing reads as arriving somewhere; three things changing reads as a bug. */
+:root[data-zone="domains"] {
+  --accent: oklch(0.66 0.15 62);
+}
+
+.dark[data-zone="domains"] {
+  --accent: oklch(0.79 0.14 72);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    transition: none;
+  }
+}
+
+/* The scroll cue and the background fading to black already say there is more
+   below, so the bar itself is redundant. Scrolling is untouched — this hides
+   the indicator, it does not lock the page. */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
